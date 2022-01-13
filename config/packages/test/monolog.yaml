@@ -1,4 +1,5 @@
 monolog:
+    channels: ['telegram', 'image', 'queue']
     handlers:
         main:
             type: fingers_crossed
@@ -10,3 +11,21 @@ monolog:
             type: stream
             path: "%kernel.logs_dir%/%kernel.environment%.log"
             level: debug
+        telegram:
+          # log all messages (since debug is the lowest level)
+          level: debug
+          type: stream
+          path: '%kernel.logs_dir%/test/telegram.log'
+          channels: [ telegram ]
+        image:
+          # log all messages (since debug is the lowest level)
+          level: debug
+          type: stream
+          path: '%kernel.logs_dir%/test/image.log'
+          channels: [ image ]
+        queue:
+          # log all messages (since debug is the lowest level)
+          level: debug
+          type: stream
+          path: '%kernel.logs_dir%/test/queue.log'
+          channels: [ queue ]

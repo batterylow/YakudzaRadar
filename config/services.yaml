@@ -4,6 +4,18 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    app.mode: !php/const App\Constants::APP_MODE_MESSAGE
+    router.request_context.host: 'yakudzaradar.distorsia.ru'
+    router.request_context.scheme: 'https'
+    telegram.api.key: '%env(TELEGRAM_API_KEY)%'
+    telegram.api.endpoint: 'https://api.telegram.org'
+    clarifai.concept.value.limit: 0.75
+    clarifai.model.multicultural.id: '93c277ec3940fba661491fda4d3ccfa0'
+    clarifai.model.gender.id: 'af40a692dfe6040f23ca656f4e144fc2'
+    clarifai.model.age.id: '36f90889189ad96c516d134bc713004d'
+    clarifai.model.general.id: 'aaa03c23b3724a16a56b629203edc62c'
+    #clarifai.workflow.analyze.id: 'YakudzaDemographics'
+    clarifai.workflow.analyze.id: 'Demographics-copy'
 
 services:
     # default configuration for services in *this* file
@@ -23,3 +35,35 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    App\Service\Telegram\Provider\PhpTelegramBot\PhpTelegramBotProvider:
+        arguments:
+            $telegramApiKey: '%env(TELEGRAM_API_KEY)%'
+            $telegramBotName: '%env(TELEGRAM_BOT_NAME)%'
+            $logger: '@monolog.logger.telegram'
+
+    App\Service\Telegram\TelegramService:
+        arguments:
+            $telegramApiKey: '%env(TELEGRAM_API_KEY)%'
+            $provider: '@App\Service\Telegram\Provider\PhpTelegramBot\PhpTelegramBotProvider'
+
+    App\Service\Telegram\TelegramHelper:
+        arguments:
+            $telegramApiKey: '%env(TELEGRAM_API_KEY)%'
+
+    App\Service\Radar\Analyzer\YakudzaRadarService:
+        arguments:
+            $jokeGenerator: '@App\Service\Radar\Joke\YakudzaJokeGenerator'
+
+    App\Service\ImageAnalyze\ImageAnalyzeService:
+        arguments:
+            $provider: '@App\Service\ImageAnalyze\Provider\ClarifaiProvider'
+
+    App\Service\ImageAnalyze\Provider\ClarifaiProvider:
+        arguments:
+          $clarifaiApiKey: '%env(CLARIFY_API_KEY)%'
+          $clarifaiAppID: '%env(CLARIFY_APP_ID)%'
+          $logger: '@monolog.logger.image'
+
+    App\MessageHandler\YakudzaRadarMessageHandler:
+        arguments:
+          $logger: '@monolog.logger.queue'
