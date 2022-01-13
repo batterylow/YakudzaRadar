@@ -5,6 +5,7 @@ namespace App\Service\Telegram\Provider\PhpTelegramBot;
 use App\Service\Radar\Analyzer\YakudzaRadarService;
 use App\Service\Telegram\Interface\TelegramProviderInterface;
 use App\Service\Telegram\TelegramHelper;
+use Doctrine\ORM\EntityManagerInterface;
 use Longman\TelegramBot\Telegram;
 use Longman\TelegramBot\Exception\TelegramException;
 use Longman\TelegramBot\Request as TgRequest;
@@ -32,7 +33,8 @@ class PhpTelegramBotProvider implements TelegramProviderInterface{
         private TelegramHelper $telegramHelper,
         private RequestStack $requestStack,
         private ParameterBagInterface $params,
-        private MessageBusInterface $messageBus
+        private MessageBusInterface $messageBus,
+        private EntityManagerInterface $entityManager
     ) {
 
         try {
@@ -65,6 +67,7 @@ class PhpTelegramBotProvider implements TelegramProviderInterface{
             'telegramHelper' => $this->telegramHelper,
             'params' => $this->params,
             'messageBus' => $this->messageBus,
+            'entityManager' => $this->entityManager
         ]);
 
         $this->client->setCommandConfig('genericmessage', [
@@ -73,6 +76,7 @@ class PhpTelegramBotProvider implements TelegramProviderInterface{
             'telegramHelper' => $this->telegramHelper,
             'params' => $this->params,
             'messageBus' => $this->messageBus,
+            'entityManager' => $this->entityManager
         ]);
 
     }

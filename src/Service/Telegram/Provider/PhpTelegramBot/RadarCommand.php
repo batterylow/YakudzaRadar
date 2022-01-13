@@ -7,6 +7,8 @@ use App\Message\YakudzaRadarMessage;
 use App\Service\ImageAnalyze\Exception\ImageAnalyzeResponseException;
 use App\Service\Radar\Analyzer\YakudzaRadarService;
 use App\Service\Telegram\TelegramHelper;
+use App\Entity\Message as LogMessage;
+use Doctrine\ORM\EntityManagerInterface;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Entities\PhotoSize;
 use Longman\TelegramBot\Entities\Update;
@@ -18,6 +20,7 @@ use Longman\TelegramBot\Entities\Message;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
+
 abstract class RadarCommand extends UserCommand {
 
     protected LoggerInterface $logger;
@@ -25,6 +28,7 @@ abstract class RadarCommand extends UserCommand {
     protected TelegramHelper $telegramHelper;
     protected ParameterBagInterface $params;
     protected MessageBusInterface $messageBus;
+    protected EntityManagerInterface $entityManager;
 
     /**
      * @param Telegram $telegram
@@ -39,6 +43,7 @@ abstract class RadarCommand extends UserCommand {
         $this->telegramHelper =  $this->getConfig('telegramHelper');
         $this->params =  $this->getConfig('params');
         $this->messageBus =  $this->getConfig('messageBus');
+        $this->entityManager =  $this->getConfig('entityManager');
 
         $this->validateConfig();
     }
@@ -75,6 +80,11 @@ abstract class RadarCommand extends UserCommand {
             throw new TelegramException('Не задан транспорт для сообщений');
         }
 
+        if(is_null($this->entityManager)){
+            $this->logger->error('Не задан entityManager');
+            throw new TelegramException('Не задан entityManager');
+        }
+
     }
 
     /**
@@ -94,6 +104,16 @@ abstract class RadarCommand extends UserCommand {
             /** @var PhotoSize $photo */
             $photo = $message->getPhoto()[count($message->getPhoto()) - 1];
 
+            $logMessage = (new LogMessage())
+                ->setAuthor($message->getFrom()->getFirstName(). ' ' .$message->getFrom()->getLastName())
+                ->setChat($message->getChat()->getTitle())
+                ->setPhotoId($photo->getFileId())
+                ->setRawData($message->toJson())
+                ->setHandled(new \DateTime())
+            ;
+            $this->entityManager->persist($logMessage);
+            $this->entityManager->flush();
+
             //Отправка задания в очередь
             if($this->params->get('app.mode') == Constants::APP_MODE_MESSAGE){
 
@@ -101,13 +121,16 @@ abstract class RadarCommand extends UserCommand {
 
                     $this->messageBus->dispatch(new YakudzaRadarMessage(
                         $photo->getFileId(),
-                        $message->getChat()->getId()
+                        $message->getChat()->getId(),
+                        $logMessage->getId()
                     ));
 
                     $this->logger->info('Задание добавлено в очередь', [
                         'fileID' => $photo->getFileId(),
                         'chatID' => $message->getChat()->getId()
                     ]);
+
+
 
                     return '';
 
@@ -139,6 +162,12 @@ abstract class RadarCommand extends UserCommand {
         } else {
             $response = 'Мне нужно фото предполагаемого Якудза =(';
         }
+
+        $logMessage
+            ->setResponse($response)
+            ->setResponsed(new \DateTime())
+        ;
+        $this->entityManager->flush();
 
         return $response;
     }
