@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Service\Telegram\TelegramService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -38,5 +39,15 @@ class MainController extends AbstractController
         return new Response();
     }
 
-
+    #[
+        Route('/file/{fileId}', name: 'get_file_url', methods: ['GET']),
+    ]
+    public function getFileUrl(
+        string $fileId,
+        TelegramService $telegramService
+    ): Response
+    {
+        $filePath = $telegramService->downloadFile($fileId);
+        return new BinaryFileResponse($filePath);
+    }
 }

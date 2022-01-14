@@ -159,4 +159,21 @@ class PhpTelegramBotProvider implements TelegramProviderInterface{
         return $result->isOk();
     }
 
+    /**
+     * Получение пути к файлу в хранилище ТГ
+     *
+     * @param string $fileID
+     * @return string
+     * @throws \Exception
+     */
+    public function getFilePath(string $fileID) :string {
+
+        $file = TgRequest::getFile([
+            'file_id' => $fileID
+        ]);
+        $filePath = $file->getRawData()['result']['file_path'] ?? throw new \Exception('Не получен путь к файлу');
+
+        return $filePath;
+
+    }
 }

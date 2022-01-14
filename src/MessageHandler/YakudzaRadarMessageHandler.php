@@ -31,10 +31,7 @@ class YakudzaRadarMessageHandler implements MessageHandlerInterface {
 
         try {
 
-            $file = Request::getFile([
-                'file_id' => $message->tgFileID
-            ]);
-            $filePath = $file->getRawData()['result']['file_path'];
+            $filePath = $this->telegramService->provider->getFilePath($message->tgFileID);
 
             try {
 

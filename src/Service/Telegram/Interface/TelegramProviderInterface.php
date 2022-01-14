@@ -42,4 +42,12 @@ interface TelegramProviderInterface {
      */
     public function sendMessage(int $chatID, string $text) :bool;
 
+    /**
+     * Получение пути к файлу в хранилище ТГ
+     *
+     * @param string $fileId
+     * @return string
+     */
+    public function getFilePath(string $fileID) :string;
+
 }
