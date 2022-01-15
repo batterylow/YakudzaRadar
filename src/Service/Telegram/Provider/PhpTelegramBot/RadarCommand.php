@@ -159,15 +159,15 @@ abstract class RadarCommand extends UserCommand {
                 $response = ImageAnalyzeResponseException::DEFAULT_MESSAGE;
             }
 
+            $logMessage
+                ->setResponse($response)
+                ->setResponsed(new \DateTime())
+            ;
+            $this->entityManager->flush();
+
         } else {
             $response = 'Мне нужно фото предполагаемого Якудза =(';
         }
-
-        $logMessage
-            ->setResponse($response)
-            ->setResponsed(new \DateTime())
-        ;
-        $this->entityManager->flush();
 
         return $response;
     }
