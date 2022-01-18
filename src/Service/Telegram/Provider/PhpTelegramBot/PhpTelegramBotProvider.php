@@ -90,6 +90,8 @@ class PhpTelegramBotProvider implements TelegramProviderInterface{
      */
     public function handleRequest() :void {
 
+        $this->logger->info('Пришел запрос', ['data' => $this->request->toArray()]);
+
         try {
 
             $this->client->handle();
@@ -99,6 +101,7 @@ class PhpTelegramBotProvider implements TelegramProviderInterface{
             $this->logger->error('Не удалось обработать запрос: ' . $e->getMessage(), [
                 'request' => $this->request->toArray()
             ]);
+
             throw $e;
 
         }

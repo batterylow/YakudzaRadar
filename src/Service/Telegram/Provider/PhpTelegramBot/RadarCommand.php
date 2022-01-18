@@ -95,7 +95,7 @@ abstract class RadarCommand extends UserCommand {
      */
     protected function analyze(Message $message) :string {
 
-        if($message->getNewChatPhoto()){
+        if($message->getNewChatPhoto() || $message->getReplyToMessage()){
             return '';
         }
 
