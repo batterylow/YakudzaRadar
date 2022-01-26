@@ -10,12 +10,12 @@ parameters:
     telegram.api.key: '%env(TELEGRAM_API_KEY)%'
     telegram.api.endpoint: 'https://api.telegram.org'
     clarifai.concept.value.limit: 0.75
-    clarifai.model.multicultural.id: '93c277ec3940fba661491fda4d3ccfa0'
-    clarifai.model.gender.id: 'af40a692dfe6040f23ca656f4e144fc2'
-    clarifai.model.age.id: '36f90889189ad96c516d134bc713004d'
-    clarifai.model.general.id: 'aaa03c23b3724a16a56b629203edc62c'
-    #clarifai.workflow.analyze.id: 'YakudzaDemographics'
-    clarifai.workflow.analyze.id: 'Demographics-copy'
+    clarifai.model.multicultural.id: 'ethnicity-demographics-recognition'
+    clarifai.model.gender.id: 'gender-demographics-recognition'
+    clarifai.model.age.id: 'age-demographics-recognition'
+    clarifai.model.general.id: 'general-image-recognition'
+    clarifai.workflow.analyze.id: 'YakudzaDemographics'
+    #clarifai.workflow.analyze.id: 'Demographics-copy'
 
 services:
     # default configuration for services in *this* file

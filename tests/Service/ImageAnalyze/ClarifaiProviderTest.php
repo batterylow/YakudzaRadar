@@ -57,6 +57,8 @@ class ClarifaiProviderTest extends KernelTestCase {
 
             $this->assertInstanceOf(ImageData::class, $imageData);
 
+            $this->assertEquals(1, count($imageData->facesData));
+
             foreach($imageData->facesData as $fdKey => $facesData){
                 $this->assertEquals($facesData->gender, $image->facesData[$fdKey]->gender);
                 $this->assertEquals($facesData->isAsian, $image->facesData[$fdKey]->isAsian);
