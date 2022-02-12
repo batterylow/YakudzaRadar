@@ -85,8 +85,15 @@ class ClarifaiProvider implements ImageAnalyzeProviderInterface {
 
         if($outputs){
 
+            $this->logger->info('Анализ завершен');
+
             $faces = [];
             foreach ($outputs as $output) {
+
+                $this->logger->info('Результат анализа', [
+                    'model' => $output->getModel()->getId(),
+                    'output' => $output->serializeToJsonString()
+                ]);
 
                 //Определяем рассу
                 if($output->getModel()->getId() == $this->parameterBag->get('clarifai.model.multicultural.id')){
@@ -109,6 +116,7 @@ class ClarifaiProvider implements ImageAnalyzeProviderInterface {
                 if($output->getModel()->getId() == $this->parameterBag->get('clarifai.model.age.id')){
                     foreach($output->getData()->getRegions() as $rKey => $region){
                         $ages = explode('-', $region->getData()->getConcepts()[0]->getName());
+                        $ages = array_map(fn($age) => preg_replace('/[^0-9]/', '', $age), $ages);
                         $faces[$rKey]['age'] = count($ages) > 1 ? rand($ages[0], $ages[1]) : $ages[0];
                     }
                 }
@@ -136,6 +144,8 @@ class ClarifaiProvider implements ImageAnalyzeProviderInterface {
                 }
 
             }
+
+            $this->logger->info('Данные лиц', $faces);
 
             //Формируем модель лиц
             foreach($faces as $face){
