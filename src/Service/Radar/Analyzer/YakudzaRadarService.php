@@ -86,11 +86,11 @@ class YakudzaRadarService {
 
         $yakudzaProbability = 0;
 
-        $asianWeight = 27;
+        $asianWeight = 22;
         $asianCorrection = 2;
         $genderWeight = 8;
         $genderCorrection = 2;
-        $ageWeight = 27;
+        $ageWeight = 32;
         $ageCorrection = 4;
         $tattooWeight = 30;
 
